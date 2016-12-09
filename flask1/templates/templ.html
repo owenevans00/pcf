@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+    <h2>Template Designer</h2>
+    <p>Use this tool to compose new PCF templates from patterns </p>
+</div>
+
+<div class="container">
+
+    {% for pattern in state %}
+    <div class="row">
+        <form method="post">
+            <div class="col-md-11">
+                <div class="row">
+                    <input type="hidden" name="id" value="{{ pattern.id }}" />
+                    <div class="col-md-1">{{ pattern.pattern.name }}</div>
+                    
+                    {# pattern-specific fields #}
+                    {% for name, value in pattern.pattern.pattern_fields.items() %}
+                    {% if pattern.edit == 1 %}
+                    <div class="col-md-2">
+                        {{ name }}:
+                        <input type="text" name="{{ name }}" value="{{ value }}" required />
+                    </div>
+                    {% else %}
+                    <div class="col-md-2">{{ name }}: {{ value }}</div>
+                    {% endif %}
+                    {% endfor %}
+
+                    {# notes #}
+                    <div class="col-md-2">
+                        {% if pattern.edit == 1 %}
+                        Note:
+                        <input type="text" name="note" value="{{ pattern.pattern.note }}" />
+                        {% else %}
+                        {{ pattern.pattern.note }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {# buttons! #}
+            <div class="col-md-1">
+                <div class="row">
+                    {% if pattern.edit == 1 %}
+                    <input type="submit" name="ok" value="OK" class="btn btn-default">
+                    <input type="submit" name="cancel" value="Cancel" class="btn btn-default">
+                    {% else %}
+                    <input type="submit" name="edit" value="Edit" class="btn btn-default">
+                    <input type="submit" name="delete" value="Delete" class="btn btn-default">
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+    <hr />
+    <form method="post">
+        <select name="envs">
+            {% for env_val, env in envs %}
+            <option value="{{ env_val }}">{{ env }}</option>
+            {% endfor %}
+        </select>
+        <select name="product">
+            {% for product in products %}
+            <option value="{{ product }}">{{ product }}</option>
+            {% endfor %}
+        </select>
+        <hr />
+        Add a pattern:&nbsp;<select name="pattern">
+            {% for pattern in patterns %}
+            <option value="{{ pattern }}">{{ pattern }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="add" class="btn btn-default">Add</button>
+        <hr />
+        <button type="submit" name="save" class="btn btn-primary">Save</button>
+    </form>
+    <div class="text-danger">{{error}}</div>
+</div>
+
+{% endblock %}
